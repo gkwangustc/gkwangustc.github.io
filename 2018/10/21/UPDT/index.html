@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="这是单目标跟踪领域的大神Martin Danelljan挂名的一篇作品，继C-COT将feature map扩展到连续域、以及ECO精简feature map之后的又一力作，发表在ECCV 2018上，同两篇前作一样，这篇作品将单目标跟踪领域的精确度又提升了一个高度">
+<meta name="keywords" content="paper, visual tracking">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文笔记 - Unveiling the Power of Deep Tracking">
+<meta property="og:url" content="http://yoursite.com/2018/10/21/UPDT/index.html">
+<meta property="og:site_name" content="NERV">
+<meta property="og:description" content="这是单目标跟踪领域的大神Martin Danelljan挂名的一篇作品，继C-COT将feature map扩展到连续域、以及ECO精简feature map之后的又一力作，发表在ECCV 2018上，同两篇前作一样，这篇作品将单目标跟踪领域的精确度又提升了一个高度">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/images/UPDT/background.png">
+<meta property="og:image" content="http://yoursite.com/images/UPDT/augmentation-tradeoff.png">
+<meta property="og:image" content="http://yoursite.com/images/UPDT/deep-experiment.png">
+<meta property="og:image" content="http://yoursite.com/images/UPDT/beta-experiment.png">
+<meta property="og:image" content="http://yoursite.com/images/UPDT/different-net.png">
+<meta property="og:image" content="http://yoursite.com/images/UPDT/state-of-the-art.png">
+<meta property="og:updated_time" content="2018-11-03T11:43:57.534Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="论文笔记 - Unveiling the Power of Deep Tracking">
+<meta name="twitter:description" content="这是单目标跟踪领域的大神Martin Danelljan挂名的一篇作品，继C-COT将feature map扩展到连续域、以及ECO精简feature map之后的又一力作，发表在ECCV 2018上，同两篇前作一样，这篇作品将单目标跟踪领域的精确度又提升了一个高度">
+<meta name="twitter:image" content="http://yoursite.com/images/UPDT/background.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/10/21/UPDT/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>论文笔记 - Unveiling the Power of Deep Tracking | NERV</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">NERV</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/21/UPDT/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王国坤">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="NERV">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">论文笔记 - Unveiling the Power of Deep Tracking
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-10-21 21:25:04" itemprop="dateCreated datePublished" datetime="2018-10-21T21:25:04+08:00">2018-10-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-11-03 19:43:57" itemprop="dateModified" datetime="2018-11-03T19:43:57+08:00">2018-11-03</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这是单目标跟踪领域的大神Martin Danelljan挂名的一篇作品，继C-COT将feature map扩展到连续域、以及ECO精简feature map之后的又一力作，发表在ECCV 2018上，同两篇前作一样，这篇作品将单目标跟踪领域的精确度又提升了一个高度</p>
+<a id="more"></a>
+<h5 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h5><p>虽然Deep Learning在如图像分类，目标检测等领域在不断得取得突破，但是在单目标跟踪领域，使用deep learning的算法并没有跟使用传统feature (HOG, CN)的算法拉开明显的差距，而且使用更复杂的网络也没有带来性能的提升，如下图所示</p>
+<p><img src="/images/UPDT/background.png" alt="虽然使用了结构更复杂的网络，ECO的性能并没有很大的提升"></p>
+<p>主要原因有两个：</p>
+<ol>
+<li><p>Deep Learning需要使用大量数据来提取具有辨别能力的feature，但是在单目标跟踪领域，可用的训练数据仅有一帧，虽然现在使用的都是预训练的模型，但是模型仍然需要处理从来没有见过的数据和类型。</p>
+</li>
+<li><p>单目标跟踪算法在跟踪过程中需要以自身的跟踪结果作为下一帧跟踪的起始位置，因此，跟踪的准确性非常重要，而Deep learning学习得到的feature，为了能够具有位移不变形和旋转不变形，会丢失空间细节。为了解决这个问题，有些跟踪算法会使用浅层特征，这就需要去探索一个最好的融合方式</p>
+</li>
+</ol>
+<h5 id="创新点"><a href="#创新点" class="headerlink" title="创新点"></a>创新点</h5><p>针对这两个问题，本文从两个方面来进行了创新：</p>
+<ol>
+<li>分析了浅层特征和深层特征，主要是从两个方面：数据增广对特征的影响；如何在准确性和鲁棒性之间做trade-off。本文的结论是，数据增广对与深度特征有很好的提升作用，但是对浅层特征有负面影响；深度特征应该负责鲁棒性，浅层特征应该负责准确性，二者需要分开训练</li>
+<li>提出了一种全新的深层特征预测的feature map和浅层特征预测feature map的融合方式。</li>
+</ol>
+<h5 id="特征分析"><a href="#特征分析" class="headerlink" title="特征分析"></a>特征分析</h5><p>为了能够更好地分析深度特征和浅层特征对跟踪算法的影响，作者采用了完全分离的方法，即以ECO方法为backbone，用HOG和CN特征作为浅层特征测量其性能，然后使用ResNet50中第四个convolution block输出的feature作为深度特征，测量性能 。</p>
+<p><strong>数据增广:</strong> 数据增广是训练数据缺乏是常用的trick，它可以增加模型的泛化能力，但是会引入一些位移和旋转，可能会降低准确率。因此，数据增广对单目标跟踪是否有用依然需要通过实验证明。作者针对常见的数据增广方式，将浅层特征和深度特征分别进行实验：</p>
+<ol>
+<li>翻转</li>
+<li>旋转: 共有12种角度，覆盖了-60-60度</li>
+<li>位移: 对图片进行水平位移和垂直位移</li>
+<li>模糊: 通过在图片上进行高斯模糊，用来模拟由于运动造成的高斯模糊</li>
+<li>Dropout: 将20%的通道权重置为0，用来增强某些通道的表达能力</li>
+</ol>
+<p>最终的结果如下图所示，可以看出，对于深度特征而言，数据增广有着积极的作用，而对于浅层特征而言，数据增广起到了相反的作用，这是由二者不同的性质造成的。深度特征可以捕捉到图片中的语义信息，这些信息对于位移和旋转不敏感，所以数据的增加可以提高深度特征的表现。而浅层特征则很容易被翻转或者模糊干扰，降低性能</p>
+<p><img src="/images/UPDT/augmentation-tradeoff.png" alt="数据增广以及鲁棒性/和准确性的tradeoff"></p>
+<p><strong>鲁棒性/准确性trade-off:</strong> 准确性指的是在跟踪过程中，算法计算的位置有多么准确，鲁棒性是指跟踪过程中，能否一直保持跟踪成功。在判别式的跟踪算法框架中，可以通过仅将离groudtruth较近的bounding box作为正样本来提高准确性，也可以提高正样本判定区域的宽度来提高泛化能力，提高鲁棒性。所以，鲁棒性/准确性的tradeoff可以通过控制该区域的宽度来实现。在ECO中，可以通过控制label score function的宽度来控制置信区域的宽度。最终的实验结果如上图所示，</p>
+<p>可以看出，深度学习的性能先是随着宽度的增加而增加，然后下降，在sigma为1/4时性能最好，这是由于深度特征对于小尺度的位移不变性造成的，而浅层特征在宽度较小时表现较好，这是由于浅层特征容易被小的位移影响造成的。</p>
+<p>最后，作者将二者都加在深度特征上，在OTB-2015上进行实验，结果表明，基于深度特征的跟踪算法可以通过数据增广和较高的置信区域宽度来提高性能。</p>
+<p><img src="/images/UPDT/deep-experiment.png" alt="使用深度特征做实验"></p>
+<p>从上面的实验可以看出，深层特征和浅层特征的性质完全不同，因此需要对他们进行单独训练，发挥出每种特征最大的能力，然后进行组合，这就涉及到如何进行组合的策略了。</p>
+<h5 id="分数图融合"><a href="#分数图融合" class="headerlink" title="分数图融合"></a>分数图融合</h5><p>对于算法输出的分数图，可以将其视为一个函数y(t)，t为坐标(x,y)，算法的准确性体现为峰值的尖锐程度，鲁棒性体现为目标峰值和干扰区域峰值的高度差距，峰值高度相差越大，证明结果越鲁棒。</p>
+<p>为了衡量算法预测位置的质量，作者定义了下列一个指标：</p>
+<script type="math/tex; mode=display">
+\xi_{t^ \ast }\left \{ y \right \}= \min_{t} \frac{y(t^\ast) - y(t)))}{\Delta (t-t^\ast))}</script><p>t为预测的位置，delta函数为距离函数，需要满足距离为0时函数值为0，距离为无穷大时，函数值为1，且假设为二阶连续可导，因此作何将距离函数定义为：</p>
+<script type="math/tex; mode=display">
+\Delta{\tau} = 1 - e^{- \frac{\kappa}{2} \left | \tau \right |^2}</script><p>随后作者证明了在干扰解和最优解非常近的情况下，以及干扰解和最优解非常远的情况下，该指标较低意味着最优解的置信度较低，该指标较高意味着最优解的置信度很高，有兴趣的话可以查看原文。</p>
+<p>在预测过程中，作者通过下式将使用深度特征得到的分数图和使用浅层特征得到的分数图进行融合：</p>
+<script type="math/tex; mode=display">
+y_{\beta}(t) = \beta_d y_d(t) + \beta_{s} y_s(t)</script><p>式中的beta为动态调节的，因此，该式可以转化为下列优化问题求解：</p>
+<script type="math/tex; mode=display">
+\mathrm{minimize}: L_{t^{\ast}}(\beta) = -\xi_{t_{\ast}} \left \{ y_{\beta} \right \} + \mu(\beta_d^2 + \beta_s^2) \\
+\mathrm{subject \ to}: \beta_s + \beta_d = 1 \beta_d \geq 0, \beta_s \geq 0, \beta = (\beta_d, \beta_s)</script><p>通过求解最优的t，得到当前帧的预测结果，具体求解过程请参考原论文。</p>
+<h5 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h5><p>作者在Need For Speed(NFS)， VOT2017， UAV123，Temple128上进行测试，并在OTB-2015中选择较难的序列(ECO,C-COT,MDNet,TCNN中有两个以上的算法的平均IoU低于0.6)，并去掉和VOT-2017重复的序列，组成OTB-H，作为验证集调节参数。OTB中的其他序列构成OTB-E，和NFS数据集一起作为测试集来进行Ablative Study，用来验证动态调参的重要性，最终结果如下图所示：</p>
+<p><img src="/images/UPDT/beta-experiment.png" alt="动态调节Beta可以带来稳定的性能提升"></p>
+<p>黄线为baseline，即ECO算法，红线为固定beta，只做分数图的融合，蓝线为动态调整beta的算法，可以看出，动态调整beta十分重要。</p>
+<p>作者将ResNet换成其他网络，并做了对比实验，可以看出，更换更好的网络并没有提高ECO的性能，但是提高了本算法的性能。</p>
+<p><img src="/images/UPDT/different-net.png" alt="本论文的方法可以通过使用更好的网络来提升性能"></p>
+<p>与最好的单目标跟踪算法相比，结果可以看出，本文算法基本处于秒杀其他算法的地位。</p>
+<p><img src="/images/UPDT/state-of-the-art.png" alt="与部分state-of-the-art算法的性能对比"></p>
+<h5 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h5><p>从本篇论文可以的出结论，浅层特征和深层特征需要分开训练，来取得更好的跟踪效果，此外，使用合适的融合策略也是非常重要的。</p>
+<p>有兴趣的读者可以关注Martin Danelljan的一系列作品，如DSST，SRDCF，C-COT，ECO等，数学功底很强，每一篇基本都能把单目标跟踪的benchmark拔高一个高度，非常solid的工作，强烈推荐。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/paper-visual-tracking/" rel="tag"># paper, visual tracking</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/11/VideoDetection/" rel="next" title="论文笔记 - Towards High Performance Video Object Detection for Mobiles">
+                <i class="fa fa-chevron-left"></i> 论文笔记 - Towards High Performance Video Object Detection for Mobiles
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="王国坤">
+            
+              <p class="site-author-name" itemprop="name">王国坤</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">tags</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/gkwangustc" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:yourname@gmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创新点"><span class="nav-number">2.</span> <span class="nav-text">创新点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#特征分析"><span class="nav-number">3.</span> <span class="nav-text">特征分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#分数图融合"><span class="nav-number">4.</span> <span class="nav-text">分数图融合</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实验"><span class="nav-number">5.</span> <span class="nav-text">实验</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结论"><span class="nav-number">6.</span> <span class="nav-text">结论</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright"> &copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王国坤</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
