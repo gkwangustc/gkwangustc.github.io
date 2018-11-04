@@ -124,7 +124,7 @@
 <meta property="og:image" content="http://www.gkwang.space/images/DAT/table3.png">
 <meta property="og:image" content="http://www.gkwang.space/images/DAT/OTB.png">
 <meta property="og:image" content="http://www.gkwang.space/images/DAT/VOT.png">
-<meta property="og:updated_time" content="2018-11-04T14:09:44.055Z">
+<meta property="og:updated_time" content="2018-11-04T23:45:09.607Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="论文笔记 - Deep Attentive Tracking via Reciprocative Learning">
 <meta name="twitter:description" content="前言这是Ma Chao大神发表在NIPS 2018上的一篇论文，从代码来看是MDNet的改进版，与CVPR 2018和ECCV 2018的趋势一样，这篇论文也在跟踪框架中使用了Attention，不过与其他论文不同的是，本篇论文的Attention并不是通过在网络加入一个module来学习得到的，而是将BP得到的梯度作为Attention，并将其作为一个Loss函数的正则项来调整网络的训练过程，比">
@@ -344,12 +344,24 @@
                 
               
 
-              <time title="Created: 2018-11-04 21:50:04 / Modified: 22:09:44" itemprop="dateCreated datePublished" datetime="2018-11-04T21:50:04+08:00">2018-11-04</time>
+              <time title="Created: 2018-11-04 21:50:04" itemprop="dateCreated datePublished" datetime="2018-11-04T21:50:04+08:00">2018-11-04</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-11-05 07:45:09" itemprop="dateModified" datetime="2018-11-05T07:45:09+08:00">2018-11-05</time>
               
             
           </span>
@@ -383,8 +395,8 @@
 
       
         <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>这是Ma Chao大神发表在NIPS 2018上的一篇论文，从代码来看是MDNet的改进版，与CVPR 2018和ECCV 2018的趋势一样，这篇论文也在跟踪框架中使用了Attention，不过与其他论文不同的是，本篇论文的Attention并不是通过在网络加入一个module来学习得到的，而是将BP得到的梯度作为Attention，并将其作为一个Loss函数的正则项来调整网络的训练过程，比较有新意。</p>
-<p>论文：<a href="https://arxiv.org/pdf/1810.03851.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1810.03851.pdf</a></p>
-<p>源码：<a href="https://github.com/shipubupt/NIPS2018" target="_blank" rel="noopener">https://github.com/shipubupt/NIPS2018</a></p>
+<p>论文：<a href="https://arxiv.org/pdf/1810.03851.pdf" target="_blank" rel="noopener">Deep Attentive Tracking via Reciprocative Learning</a></p>
+<p>源码：<a href="https://github.com/shipubupt/NIPS2018" target="_blank" rel="noopener">NIPS2018</a></p>
 <a id="more"></a>
 <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>一般来说，tracking和detection类似，可以分为one-stage和two-stage两种。代表性的one-stage方法一般基于DCF方法，通过相关滤波器在特征上卷积得到heat map，最高点即为目标所在位置。two-stage方法一般为判别方法，即先在图像中产生proposal，然后通过分类器来给proposal打分，最高的proposal即为目标所在位置，如SVM，CNN-SVM等。</p>
 <p>这两种方法都可以通过Attention提高tracker的性能，在one-stage方法中，在输入特征上加Gaussian或者Cosine窗函数来抑制目标周围的特征，让DCF专注于图片中心的目标，可以视为一种简单的Attention，但是当物体有较大位移时，这样的Attention就没有太大用处，而且抑制边缘的背景特征，也会丢掉一些有用的信息；在two-stage方法中，Attention更常用于特征选择，在end-to-end的训练框架中，通过Attention模块的选择作用，可以增强特征的表达能力，提高tracker性能，但是在单帧上学习得到的attention在持续的跟踪过程中并不鲁棒，由于无法自适应的调整，一些微小的错误就会导致累积效应，从而限制了tracker的性能。</p>
